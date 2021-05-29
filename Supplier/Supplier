@@ -1,5 +1,5 @@
-create database supplier;
-use supplier;
+create database suppliers;
+use suppliers;
 create table supplier(
     sid int not null,
     sname varchar(20) not null,
@@ -27,11 +27,8 @@ create table catalog(
 insert into supplier VALUES(10001,'Acme Widget','Bangalore'),
 (10002,'Johns','Kolkata'),
 (10003,'Vimal','Mumbai'),
-(10004,'Reliance','Delhi'),
-(10005,'Mahindra','Mumbai');
-
+(10004,'Reliance','Delhi');
 SELECT * from supplier;
-
 
 insert into parts VALUES(20001,'Book','Red'),
 (20002,'Pen','Red'),
@@ -40,22 +37,20 @@ insert into parts VALUES(20001,'Book','Red'),
 (20005,'Charger','Black');
 SELECT * from parts;
 
-
 insert into catalog VALUES(10001,'20001','10'),
 (10001,'20002','10'),
 (10001,'20003','30'),
 (10001,'20004','10'),
 (10001,'20005','10'),
 (10002,'20001','10'),
+(10002,'20002','20'),
 (10003,'20003','30'),
 (10004,'20003','40');
 select * from catalog;
 
-
 SELECT DISTINCT p.pname
 FROM parts p, catalog c
 WHERE p.pid = c.pid;
-
 
 SELECT DISTINCT pname 
 FROM catalog x, parts y, supplier z 
@@ -79,9 +74,8 @@ FROM catalog c
 WHERE NOT EXISTS(SELECT * FROM parts p 
 WHERE p.pid=c.pid and p.color<>'red');
 
-
 SELECT S.sname 
-FROM SUPPLIERS S 
+FROM supplier S 
 WHERE NOT EXISTS ((SELECT P.pid FROM PARTS P) 
 EXCEPT(SELECT C.pid 
 FROM CATALOG C WHERE C.sid = S.sid ));
