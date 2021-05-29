@@ -1,0 +1,98 @@
+create database supplier;
+use supplier;
+create table supplier(
+    sid int not null,
+    sname varchar(20) not null,
+    address varchar(30) not null,
+    primary key(sid)
+);
+
+
+create table parts(
+    pid int not null,
+    pname varchar(20),
+    color varchar(10),
+    primary key(pid)
+   );
+
+create table catalog(
+    sid int not null,
+    pid int not null,
+    cost real not null,
+    foreign key(sid) references supplier(sid) on delete cascade,
+    foreign key(pid) REFERENCES parts(pid) on delete CASCADE
+    );
+
+
+insert into supplier VALUES(10001,'Acme Widget','Bangalore'),
+(10002,'Johns','Kolkata'),
+(10003,'Vimal','Mumbai'),
+(10004,'Reliance','Delhi'),
+(10005,'Mahindra','Mumbai');
+
+SELECT * from supplier;
+
+
+insert into parts VALUES(20001,'Book','Red'),
+(20002,'Pen','Red'),
+(20003,'Pencil','Green'),
+(20004,'Mobile','Green'),
+(20005,'Charger','Black');
+SELECT * from parts;
+
+
+insert into catalog VALUES(10001,'20001','10'),
+(10001,'20002','10'),
+(10001,'20003','30'),
+(10001,'20004','10'),
+(10001,'20005','10'),
+(10002,'20001','10'),
+(10003,'20003','30'),
+(10004,'20003','40');
+select * from catalog;
+
+
+SELECT DISTINCT p.pname
+FROM parts p, catalog c
+WHERE p.pid = c.pid;
+
+
+SELECT DISTINCT pname 
+FROM catalog x, parts y, supplier z 
+WHERE(z.sname='Acme Widget' 
+AND z.sid=x.sid);
+
+SELECT DISTINCT c.sid FROM catalog c 
+WHERE c.cost>(SELECT AVG(c1.cost) 
+FROM catalog c1
+WHERE c1.pid=c.pid);
+
+SELECT P.pid, S.sname 
+FROM parts P, supplier S, catalog C 
+WHERE C.pid = P.pid 
+AND C.sid = S.sid 
+AND C.cost = (SELECT MAX(C1.cost) 
+FROM catalog C1 WHERE C1.pid = P.pid);
+
+SELECT DISTINCT c.sid 
+FROM catalog c 
+WHERE NOT EXISTS(SELECT * FROM parts p 
+WHERE p.pid=c.pid and p.color<>'red');
+
+
+SELECT S.sname 
+FROM SUPPLIERS S 
+WHERE NOT EXISTS ((SELECT P.pid FROM PARTS P) 
+EXCEPT(SELECT C.pid 
+FROM CATALOG C WHERE C.sid = S.sid ));
+
+SELECT S.sname
+FROM supplier S
+WHERE NOT EXISTS (( SELECT P.pid
+FROM parts P
+WHERE P.color = 'RED')
+EXCEPT
+( SELECT C.pid
+FROM catalog C, parts P
+WHERE C.sid = S.sid AND
+C.pid = P.pid AND P.color = 'RED' ));
